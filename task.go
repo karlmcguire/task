@@ -67,6 +67,10 @@ func mark(path string, tasks []*Task) error {
 }
 
 func main() {
+	if len(os.Args) == 1 {
+		fmt.Println("usage: task [-pull -push] [notes...]")
+		os.Exit(1)
+	}
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "-pull":
