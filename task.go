@@ -106,7 +106,7 @@ func main() {
 		panic(err)
 	}
 
-	if len(tasks) > 1 {
+	if len(tasks) >= 1 {
 		tasks[len(tasks)-1].Duration = time.Since(tasks[len(tasks)-1].Started)
 	}
 	tasks = append(tasks, &Task{
