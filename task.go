@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 const (
@@ -23,8 +25,25 @@ type Task struct {
 }
 
 func (t *Task) String() string {
-	return fmt.Sprintf("(%s): %s [%dm]",
-		t.Started.Format("3:04pm"), t.Note, int(t.Duration.Minutes()))
+	red := color.New(color.FgRed).SprintFunc()
+	yellow := color.New(color.FgYellow).SprintFunc()
+	start, stop := -1, -1
+	for i, c := range t.Note {
+		if c == rune('(') {
+			start = i
+		}
+		if c == rune(')') {
+			stop = i
+		}
+	}
+	note := t.Note
+	if start != -1 && stop != -1 {
+		note = strings.ReplaceAll(t.Note, t.Note[start:stop+1], yellow(t.Note[start:stop+1]))
+	}
+	return fmt.Sprintf("%s %s [%dm]",
+		red(t.Started.Format("(3:04pm)")),
+		note,
+		int(t.Duration.Minutes()))
 }
 
 func load(path string) ([]*Task, error) {
