@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	PATH      = "/Users/karl/.tasks/"
+	PATH      = "/home/karl/.tasks/"
 	DATA_PATH = PATH + "data.json"
 	MARK_PATH = PATH + "readme.md"
 )
@@ -20,6 +20,11 @@ type Task struct {
 	Note     string        `json:"note"`
 	Started  time.Time     `json:"started"`
 	Duration time.Duration `json:"duration"`
+}
+
+func (t *Task) String() string {
+	return fmt.Sprintf("(%s): %s [%dm]",
+		t.Started.Format("3:04pm"), t.Note, int(t.Duration.Minutes()))
 }
 
 func load(path string) ([]*Task, error) {
@@ -73,13 +78,23 @@ func main() {
 	}
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
-		case "-pull":
+		case "-l":
+			// load data.json
+			tasks, err := load(DATA_PATH)
+			if err != nil {
+				panic(err)
+			}
+			for _, task := range tasks {
+				fmt.Println(task.String())
+			}
+			return
+		case "-g":
 			cmd := exec.Command("git", "-C", PATH, "pull")
 			if err := cmd.Run(); err != nil {
 				panic(err)
 			}
 			return
-		case "-push":
+		case "-p":
 			// add
 			cmd := exec.Command("git", "-C", PATH, "add", "-A")
 			if err := cmd.Run(); err != nil {
